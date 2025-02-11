@@ -75,6 +75,8 @@ namespace Institute_Management.Controllers
                 .Include(s => s.User)
                 .Include(s => s.Enrollments)
                 .ThenInclude(e => e.Course)
+                 .ThenInclude(c => c.Teacher) // Include Teacher
+                    .ThenInclude(t => t.User) // Include User details of Teacher
                 .FirstOrDefaultAsync(s => s.StudentId == id);
 
             if (student == null) return NotFound();
@@ -107,7 +109,17 @@ namespace Institute_Management.Controllers
                     {
                         CourseId = (int)e.Course.CourseId,
                         CourseName = e.Course.CourseName,
-                        Description = e.Course.Description
+                        Description = e.Course.Description,
+                        Teacher = new TeacherDTO
+                        {
+                            TeacherId = e.Course.TeacherId,
+                            SubjectSpecialization = e.Course.Teacher.SubjectSpecialization,
+                            User = new UserDTO
+                            {
+                                Name = e.Course.Teacher.User.Name,
+                                ContactDetails = e.Course.Teacher.User.ContactDetails
+                            }
+                        }
                     }
                 }).ToList()
             };
